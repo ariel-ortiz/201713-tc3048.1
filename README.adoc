@@ -1,6 +1,6 @@
 = Tc3048.1 Compiler Design
 
-_Tecnológico de Monterrey, Estado de México._
+_Tecnológico de Monterrey, Santa Fe._
 
 This project contains all the source files that the course instructor will be writing in class during the 2017 August-December semester.
 
