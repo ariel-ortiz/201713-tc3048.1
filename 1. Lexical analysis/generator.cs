@@ -12,12 +12,9 @@ public class Pow2Generator {
     }
 
     public static void Main() {
-        
-        IEnumerable<int> e = Start();
-        IEnumerator<int> enu = e.GetEnumerator();
 
-        while (enu.MoveNext()) {
-            Console.WriteLine(enu.Current);
+        foreach (int i in Start()) {
+            Console.WriteLine(i);
         }
     }
 }
