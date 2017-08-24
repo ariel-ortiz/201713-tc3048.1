@@ -16,11 +16,8 @@ public class Pow2Generator {
         IEnumerable<int> e = Start();
         IEnumerator<int> enu = e.GetEnumerator();
 
-        Console.WriteLine(enu.MoveNext());
-        Console.WriteLine(enu.Current);
-        Console.WriteLine(enu.MoveNext());
-        Console.WriteLine(enu.Current);
-        Console.WriteLine(enu.MoveNext());
-        Console.WriteLine(enu.Current);
+        while (enu.MoveNext()) {
+            Console.WriteLine(enu.Current);
+        }
     }
 }
