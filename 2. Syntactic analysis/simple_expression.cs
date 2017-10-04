@@ -39,19 +39,19 @@ public class Scanner {
     }
     public IEnumerable<Token> Start() {
         foreach (Match m in regex.Matches(input)) {
-            if (m.Groups[1].Length > 0) {
+            if (m.Groups[1].Success) {
                 yield return new Token(TokenCategory.PLUS, m.Value);
-            } else if (m.Groups[2].Length > 0) {
+            } else if (m.Groups[2].Success) {
                 yield return new Token(TokenCategory.TIMES, m.Value);
-            } else if (m.Groups[3].Length > 0) {
+            } else if (m.Groups[3].Success) {
                 yield return new Token(TokenCategory.PAR_OPEN, m.Value);
-            } else if (m.Groups[4].Length > 0) {
+            } else if (m.Groups[4].Success) {
                 yield return new Token(TokenCategory.PAR_CLOSE, m.Value);
-            } else if (m.Groups[5].Length > 0) {
+            } else if (m.Groups[5].Success) {
                 yield return new Token(TokenCategory.INT, m.Value);
-            } else if (m.Groups[6].Length > 0) {
+            } else if (m.Groups[6].Success) {
                 continue;
-            } else if (m.Groups[7].Length > 0) {
+            } else if (m.Groups[7].Success) {
                 yield return new Token(TokenCategory.ILLEGAL, m.Value);
             }
         }
