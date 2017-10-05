@@ -87,39 +87,42 @@ public class Parser {
             throw new SyntaxError();
         }
     }
-    public void Prog() {
-        Expr();
+    public int Prog() {
+        var result = Expr();
         Expect(TokenCategory.EOF);
+        return result;
     }
 
-    public void Expr() {
-        Term();
+    public int Expr() {
+        var result = Term();
         while (Current == TokenCategory.PLUS) {
             Expect(TokenCategory.PLUS);
-            Term();
+            result += Term();
         }
+        return result;
     }
 
-    public void Term() {
-        Fact();
+    public int Term() {
+        var result = Fact();
         while (Current == TokenCategory.TIMES) {
             Expect(TokenCategory.TIMES);
-            Fact();
+            result *= Fact();
         }
+        return result;
     }
 
-    public void Fact() {
+    public int Fact() {
         switch (Current) {
 
         case TokenCategory.INT:
-            Expect(TokenCategory.INT);
-            break;
+            var token = Expect(TokenCategory.INT);
+            return Convert.ToInt32(token.Lexeme);
 
         case TokenCategory.PAR_OPEN:
             Expect(TokenCategory.PAR_OPEN);
-            Expr();
+            var result = Expr();
             Expect(TokenCategory.PAR_CLOSE);
-            break;    
+            return result;    
             
         default:
             throw new SyntaxError();
@@ -132,8 +135,8 @@ public class SimpleExpression {
         var line = Console.ReadLine();
         var parser = new Parser(new Scanner(line).Start().GetEnumerator());
         try {
-            parser.Prog();
-            Console.WriteLine("Syntax OK.");
+            var result = parser.Prog();
+            Console.WriteLine(result);
         } catch (SyntaxError) {
             Console.Error.WriteLine("Found syntax error!");
         }
