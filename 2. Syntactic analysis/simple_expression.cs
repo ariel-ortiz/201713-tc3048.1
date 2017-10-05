@@ -23,7 +23,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
 public enum TokenCategory {
-    PLUS, TIMES, PAR_OPEN, PAR_CLOSE, INT, EOF, ILLEGAL
+    PLUS, TIMES, POW, PAR_OPEN, PAR_CLOSE, INT, EOF, ILLEGAL
 }
 
 public class Token {
@@ -40,7 +40,7 @@ public class Token {
 
 public class Scanner {
     readonly String input;
-    static readonly Regex regex = new Regex(@"([+])|([*])|([(])|([)])|(\d+)|(\s)|(.)");
+    static readonly Regex regex = new Regex(@"([+])|([*])|([(])|([)])|(\d+)|(\s)|(\^)|(.)");
     public Scanner(String input) {
         this.input = input;
     }
@@ -59,6 +59,8 @@ public class Scanner {
             } else if (m.Groups[6].Success) {
                 continue;
             } else if (m.Groups[7].Success) {
+                yield return new Token(TokenCategory.POW, m.Value);           
+            } else if (m.Groups[8].Success) {
                 yield return new Token(TokenCategory.ILLEGAL, m.Value);
             }
         }
@@ -103,10 +105,19 @@ public class Parser {
     }
 
     public int Term() {
-        var result = Fact();
+        var result = Pow();
         while (Current == TokenCategory.TIMES) {
             Expect(TokenCategory.TIMES);
-            result *= Fact();
+            result *= Pow();
+        }
+        return result;
+    }
+
+    public int Pow() {
+        var result = Fact();
+        if (Current == TokenCategory.POW) {
+            Expect(TokenCategory.POW);
+            result = (int) Math.Pow(result, Pow());
         }
         return result;
     }
