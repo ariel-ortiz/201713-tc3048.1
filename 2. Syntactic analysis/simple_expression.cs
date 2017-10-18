@@ -4,8 +4,10 @@
 
     Expr -> Expr "+" Term
     Expr -> Term
-    Term -> Term "*" Fact
-    Term -> Fact
+    Term -> Term "*" Pow
+    Term -> Pow
+    Pow  -> Fact "^" Pow
+    Pow  -> Fact
     Fact -> Int
     Fact -> "(" Expr ")"
 
@@ -13,7 +15,8 @@
 
     Prog -> Expr Eof
     Expr -> Term ("+" Term)*
-    Term -> Fact ("*" Fact)*
+    Term -> Pow ("*" Pow)*
+    Pow  -> Fact ("^" Fact)?
     Fact -> Int | "(" Expr ")"
 
 */
@@ -59,7 +62,7 @@ public class Scanner {
             } else if (m.Groups[6].Success) {
                 continue;
             } else if (m.Groups[7].Success) {
-                yield return new Token(TokenCategory.POW, m.Value);           
+                yield return new Token(TokenCategory.POW, m.Value);
             } else if (m.Groups[8].Success) {
                 yield return new Token(TokenCategory.ILLEGAL, m.Value);
             }
@@ -72,14 +75,18 @@ class SyntaxError: Exception {
 }
 
 public class Parser {
+
     IEnumerator<Token> tokenStream;
+
     public Parser(IEnumerator<Token> tokenStream) {
         this.tokenStream = tokenStream;
         this.tokenStream.MoveNext();
     }
+
     public TokenCategory Current {
         get { return tokenStream.Current.Category; }
     }
+
     public Token Expect(TokenCategory category) {
         if (Current == category) {
             Token current = tokenStream.Current;
@@ -89,6 +96,7 @@ public class Parser {
             throw new SyntaxError();
         }
     }
+
     public int Prog() {
         var result = Expr();
         Expect(TokenCategory.EOF);
@@ -133,8 +141,8 @@ public class Parser {
             Expect(TokenCategory.PAR_OPEN);
             var result = Expr();
             Expect(TokenCategory.PAR_CLOSE);
-            return result;    
-            
+            return result;
+
         default:
             throw new SyntaxError();
         }
