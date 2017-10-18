@@ -2,11 +2,11 @@
 
     Scanner + Parser for the following simple expression language:
 
-    Expr -> Expr "+" Term
+    Expr -> Expr "+" Term    // "+" has left associativity
     Expr -> Term
-    Term -> Term "*" Pow
+    Term -> Term "*" Pow     // "*" has left associativity
     Term -> Pow
-    Pow  -> Fact "^" Pow
+    Pow  -> Fact "^" Pow     // "^" has right associativity
     Pow  -> Fact
     Fact -> Int
     Fact -> "(" Expr ")"
@@ -16,7 +16,7 @@
     Prog -> Expr Eof
     Expr -> Term ("+" Term)*
     Term -> Pow ("*" Pow)*
-    Pow  -> Fact ("^" Fact)?
+    Pow  -> Fact ("^" Pow)?
     Fact -> Int | "(" Expr ")"
 
 */
@@ -151,6 +151,7 @@ public class Parser {
 
 public class SimpleExpression {
     public static void Main() {
+        Console.Write("> ");
         var line = Console.ReadLine();
         var parser = new Parser(new Scanner(line).Start().GetEnumerator());
         try {
