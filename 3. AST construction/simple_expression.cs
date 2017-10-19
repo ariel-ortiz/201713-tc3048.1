@@ -98,47 +98,64 @@ public class Parser {
         }
     }
 
-    public void Prog() {
-        Expr();
+    public Node Prog() {
+        var r = Expr();
         Expect(TokenCategory.EOF);
+        return new Prog() { r };
     }
 
-    public void Expr() {
-        Term();
+    public Node Expr() {
+        var r = Term();
         while (Current == TokenCategory.PLUS) {
-            Expect(TokenCategory.PLUS);
-            Term();
+            var p = new Plus() {
+                AnchorToken = Expect(TokenCategory.PLUS)
+            };
+            p.Add(r);
+            p.Add(Term());
+            r = p;
         }
+        return r;
     }
 
-    public void Term() {
-        Pow();
+    public Node Term() {
+        var r = Pow();
         while (Current == TokenCategory.TIMES) {
-            Expect(TokenCategory.TIMES);
-            Pow();
+            var p = new Times() {
+                AnchorToken = Expect(TokenCategory.TIMES)
+            };
+            p.Add(r);
+            p.Add(Pow());
+            r = p;
         }
+        return r;
     }
 
-    public void Pow() {
-        Fact();
+    public Node Pow() {
+        var r = Fact();
         if (Current == TokenCategory.POW) {
-            Expect(TokenCategory.POW);
-            Pow();
+            var p = new Pow() {
+                AnchorToken = Expect(TokenCategory.POW)
+            };
+            p.Add(r);
+            p.Add(Pow());
+            r = p;
         }
+        return r;
     }
 
-    public void Fact() {
+    public Node Fact() {
         switch (Current) {
 
         case TokenCategory.INT:
-            Expect(TokenCategory.INT);
-            break;
+            return new Int() {
+                AnchorToken = Expect(TokenCategory.INT)
+            };
 
         case TokenCategory.PAR_OPEN:
             Expect(TokenCategory.PAR_OPEN);
-            Expr();
+            var r = Expr();
             Expect(TokenCategory.PAR_CLOSE);
-            break;
+            return r;
 
         default:
             throw new SyntaxError();
@@ -146,7 +163,7 @@ public class Parser {
     }
 }
 
-class Node: IEnumerable<Node> {
+public class Node: IEnumerable<Node> {
 
     IList<Node> children = new List<Node>();
 
@@ -191,14 +208,20 @@ class Node: IEnumerable<Node> {
     }
 }
 
+public class Prog : Node {}
+public class Plus : Node {}
+public class Times : Node {}
+public class Pow : Node {}
+public class Int : Node {}
+
 public class SimpleExpression {
     public static void Main() {
         Console.Write("> ");
         var line = Console.ReadLine();
         var parser = new Parser(new Scanner(line).Start().GetEnumerator());
         try {
-            parser.Prog();
-            Console.WriteLine("Syntax OK!");
+            var root = parser.Prog();
+            Console.WriteLine(root.ToStringTree());
         } catch (SyntaxError) {
             Console.Error.WriteLine("Found syntax error!");
         }
