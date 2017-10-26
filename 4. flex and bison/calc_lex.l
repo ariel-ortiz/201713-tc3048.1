@@ -13,6 +13,7 @@ void yyerror(char *s, ...);
 "*"    { return MUL; }
 "("    { return PAR_LEFT; }
 ")"    { return PAR_RIGHT; }
+"^"    { return POW; }
 [0-9]+ {
         yylval = atoi(yytext);
         return NUMBER;

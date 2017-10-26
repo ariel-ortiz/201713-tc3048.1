@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <stdlib.h>
+#include <math.h>
 
 int yylex(void);
 void yyerror(char *s, ...);
@@ -12,11 +13,12 @@ extern int yylineno;
 %}
 
 /* Declare tokens */
-%token ADD MUL NEG NUMBER PAR_LEFT PAR_RIGHT EOL
+%token ADD MUL NEG NUMBER PAR_LEFT PAR_RIGHT EOL POW
 
 /* Specify operator precedence and associativity */
 %left ADD
 %left MUL
+%right POW
 %nonassoc NEG
 
 %%
@@ -29,6 +31,7 @@ calclist:
 exp:
       exp ADD exp            { $$ = $1 + $3; }
     | exp MUL exp            { $$ = $1 * $3; }
+    | exp POW exp            { $$ = (int) pow($1, $3); }
     | NEG exp                { $$ = -$2; }
     | PAR_LEFT exp PAR_RIGHT { $$ = $2; }
     | NUMBER
