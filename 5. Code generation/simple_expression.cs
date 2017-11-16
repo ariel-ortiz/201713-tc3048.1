@@ -221,7 +221,7 @@ public class CILVisitor {
         return 
 @".assembly 'output' { }
 
-.assembly extern int64lib { }
+.assembly extern 'int64lib' { }
 
 .class public 'Test' extends ['mscorlib']'System'.'Object' {
   .method public static void 'whatever'() {
