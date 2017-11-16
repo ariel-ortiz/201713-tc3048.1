@@ -1,3 +1,5 @@
+using Int64;
+
 public class Expression {
     static long x;
     static long f(long y) {
@@ -6,5 +8,6 @@ public class Expression {
         return 0;
     }
     public static void Main() {
+        int r = (int) Utils.Pow(2, 10);
     }
 }

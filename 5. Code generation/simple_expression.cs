@@ -215,6 +215,47 @@ public class Times : Node {}
 public class Pow : Node {}
 public class Int : Node {}
 
+public class CILVisitor {
+    public String Visit(Prog node) {
+        var child = Visit((dynamic) node[0]);
+        return 
+@".assembly 'output' { }
+
+.assembly extern int64lib { }
+
+.class public 'Test' extends ['mscorlib']'System'.'Object' {
+  .method public static void 'whatever'() {
+  .entrypoint
+" 
++ child +
+@"    call void class ['mscorlib']'System'.'Console'::'WriteLine'(int32)
+    ret
+  }
+}";
+    }
+    public String Visit(Plus node) {
+        var left = Visit((dynamic) node[0]);
+        var right = Visit((dynamic) node[1]);
+        return left + right + "    add.ovf\n";
+    }
+    public String Visit(Times node) {
+        var left = Visit((dynamic) node[0]);
+        var right = Visit((dynamic) node[1]);
+        return left + right + "    mul.ovf\n";
+    }
+    public String Visit(Pow node) {
+        var left = Visit((dynamic) node[0]);
+        var right = Visit((dynamic) node[1]);
+        return left + "    conv.i8\n"
+        + right + "    conv.i8\n"
+        + "    call int64 class ['int64lib']'Int64'.'Utils'::'Pow'(int64, int64)\n"
+        + "    conv.i4\n";
+    }
+    public String Visit(Int node) {
+        return "    ldc.i4 " + node.AnchorToken.Lexeme + "\n";
+    }
+}
+
 public class SimpleExpression {
     public static void Main() {
         Console.Write("> ");
@@ -222,7 +263,7 @@ public class SimpleExpression {
         var parser = new Parser(new Scanner(line).Start().GetEnumerator());
         try {
             var root = parser.Prog();
-            File.WriteAllText("output.il", line);
+            File.WriteAllText("output.il", new CILVisitor().Visit((dynamic) root));
 
         } catch (SyntaxError) {
             Console.Error.WriteLine("Found syntax error!");
