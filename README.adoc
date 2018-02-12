@@ -21,3 +21,5 @@ You will find all the project source files under this directory.
 4. Every time the instructor updates an existing file or creates a new one, you will need to run the repository *pull* command. Type at the terminal from within the `tc3048` directory:
     
     git pull
+    
+This repository remains for historical reasons.
